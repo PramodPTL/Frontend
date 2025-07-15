@@ -1,12 +1,14 @@
-import Heading from "./Components/Heading"
-import LeaderBoard from "./Components/LeaderBoard";
-function App() {
+import React from "react";
+import LeaderboardContainer from "./Containers/LeaderboardContainer";
+import Heading from "./Components/Heading";
+
+const App = () => {
   return (
     <>
       <Heading></Heading>
-      <LeaderBoard></LeaderBoard>
+      <LeaderboardContainer />;
     </>
   );
 }
 
-export default App
+export default App;

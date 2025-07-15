@@ -1,9 +1,14 @@
-import React from 'react';
+import React from "react";
 
-const LeaderBoardTitle = () => {
-  return (
-    <h3>LeaderBoardTitle Start from here</h3>
-  );
-};
+const LeaderBoardTitle = () => (
+  <thead>
+    <tr>
+      <th>🏆 Ranking</th>
+      <th>👤 User Name</th>
+      <th>📊 Total Points</th>
+      <th>🎁 Claim</th>
+    </tr>
+  </thead>
+);
 
 export default LeaderBoardTitle;
