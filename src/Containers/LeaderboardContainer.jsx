@@ -1,66 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import LeaderBoardTitle from "../Components/LeaderBoardTitle";
 import Users from "../Components/Users";
 
-
-const initialUsers = Array.from({ length: 0 }, (_, i) => ({
-  id: i,
-  name: `User ${i + 1}`,
-  points: 0,
-}));
-
 const LeaderboardContainer = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [newName, setNewName] = useState("");
 
-  const handleClaim = (id) => {
-    const randomPoints = Math.floor(Math.random() * 10) + 1;
-    const updatedUsers = users.map((user) =>
-      user.id === id ? { ...user, points: user.points + randomPoints } : user
-    );
-    const sortedUsers = [...updatedUsers].sort((a, b) => b.points - a.points);
-    setUsers(sortedUsers);
+  const fetchUsers = async () => {
+    const res = await axios.get("http://localhost:5000/api/users");
+    setUsers(res.data);
   };
 
-  const handleAddUser = (e) => {
+  const handleClaim = async (id) => {
+    const res = await axios.put(`http://localhost:5000/api/users/${id}/claim`);
+    fetchUsers(); // Re-fetch to get updated + sorted list
+  };
+
+  const handleAddUser = async (e) => {
     e.preventDefault();
     if (newName.trim() === "") return;
 
-    const newUser = {
-      id: users.length,
+    await axios.post("http://localhost:5000/api/users", {
       name: newName.trim(),
-      points: 0,
-    };
-
-    const updatedUsers = [...users, newUser].sort(
-      (a, b) => b.points - a.points
-    );
-    setUsers(updatedUsers);
+    });
     setNewName("");
+    fetchUsers();
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
-    <>
-      
-      <div style={{ padding: "20px" }}>
-        <h2>⚡ Leaderboard</h2>
+    <div style={{ padding: "20px" }}>
+      <h2>⚡ Leaderboard</h2>
 
-        <form onSubmit={handleAddUser} style={{ marginBottom: "20px" }}>
-          <input
-            type="text"
-            value={newName}
-            placeholder="Enter new user name"
-            onChange={(e) => setNewName(e.target.value)}
-          />
-          <button type="submit">Add User</button>
-        </form>
+      <form onSubmit={handleAddUser} style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={newName}
+          placeholder="Enter new user name"
+          onChange={(e) => setNewName(e.target.value)}
+        />
+        <button type="submit">Add User</button>
+      </form>
 
-        <table border="1" cellPadding="10" cellSpacing="0">
-          <LeaderBoardTitle />
-          <Users users={users} onClaim={handleClaim} />
-        </table>
-      </div>
-    </>
+      <table className="table table-striped table-hover table-bordered">
+        <LeaderBoardTitle />
+        <Users users={users} onClaim={handleClaim} />
+      </table>
+    </div>
   );
 };
 
